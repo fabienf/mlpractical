@@ -1,0 +1,29 @@
+    '''
+    (MultipleLayerModel([
+        AffineLayer(input_dim, hidden_dim, weights_init, biases_init),
+        ReluLayer(),
+        AffineLayer(hidden_dim, hidden_dim, weights_init, biases_init),
+        ReluLayer(),
+        AffineLayer(hidden_dim, output_dim, weights_init, biases_init)
+    ]),'Relu Layer'),
+    (MultipleLayerModel([
+        AffineLayer(input_dim, hidden_dim, weights_init, biases_init),
+        SigmoidLayer(),
+        AffineLayer(hidden_dim, hidden_dim, weights_init, biases_init),
+        SigmoidLayer(),
+        AffineLayer(hidden_dim, output_dim, weights_init, biases_init)
+    ]),'Sigmoid Layer'),
+    (MultipleLayerModel([
+        AffineLayer(input_dim, hidden_dim, weights_init, biases_init),
+        TanhLayer(),
+        AffineLayer(hidden_dim, hidden_dim, weights_init, biases_init),
+        TanhLayer(),
+        AffineLayer(hidden_dim, output_dim, weights_init, biases_init)
+    ]),'TanhLayer Layer'),
+    (MultipleLayerModel([
+        AffineLayer(input_dim, hidden_dim, weights_init, biases_init),
+        TanhLayer(),
+        AffineLayer(hidden_dim, hidden_dim, weights_init, biases_init),
+        TanhLayer(),
+        AffineLayer(hidden_dim, output_dim, weights_init, biases_init)
+    ]),'ArcTanLayer Layer'),
