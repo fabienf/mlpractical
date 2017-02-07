@@ -3,13 +3,9 @@ import tensorflow as tf
 import numpy as np
 from mlp.data_providers import CIFAR10DataProvider, CIFAR100DataProvider
 import matplotlib.pyplot as plt
+from multiprocessing.dummy import Pool as ThreadPool
+import cPickle
 
-train_data = CIFAR10DataProvider('train', batch_size=50)
-valid_data = CIFAR10DataProvider('valid', batch_size=50)
-
-TAG = 'Test'
-num_hidden = 200
-num_epochs = 10
 
 
 def fully_connected_layer(inputs, input_dim, output_dim, nonlinearity=tf.nn.relu):
@@ -22,14 +18,30 @@ def fully_connected_layer(inputs, input_dim, output_dim, nonlinearity=tf.nn.relu
     return outputs
 
 
-def setUpNetwork():
+
+
+
+def runNetwork(meta=None):
+
+	train_data = CIFAR10DataProvider('train', batch_size=50)
+	valid_data = CIFAR10DataProvider('valid', batch_size=50)
+
+	#The results to be returned
+	epoch_res_dict = {}
+	if meta==None:
+		meta = {
+			'num_hidden': 200,
+			'num_epochs': 10,
+			'layers': 2
+		}
+
 	inputs = tf.placeholder(tf.float32, [None, train_data.inputs.shape[1]], 'inputs')
 	targets = tf.placeholder(tf.float32, [None, train_data.num_classes], 'targets')
 
 	with tf.name_scope('fc-layer-1'):
-	    hidden_1 = fully_connected_layer(inputs, train_data.inputs.shape[1], num_hidden)
+	    hidden_1 = fully_connected_layer(inputs, train_data.inputs.shape[1], meta['num_hidden'])
 	with tf.name_scope('output-layer'):
-	    outputs = fully_connected_layer(hidden_1, num_hidden, train_data.num_classes, tf.identity)
+	    outputs = fully_connected_layer(hidden_1, meta['num_hidden'], train_data.num_classes, tf.identity)
 
 	with tf.name_scope('error'):
 	    error = tf.reduce_mean(
@@ -45,14 +57,9 @@ def setUpNetwork():
 	init = tf.global_variables_initializer()
 
 
-def runNetwork(num_epochs=10,param=-1):
-	epoch_res_dict = {}
-	meta = {
-		'params': param
-	}
 	with tf.Session() as sess:
 	    sess.run(init)
-	    for e in range(num_epochs):
+	    for e in xrange(meta['num_epochs']):
 	        running_error = 0.
 	        running_accuracy = 0.
 	        for input_batch, target_batch in train_data:
@@ -63,8 +70,8 @@ def runNetwork(num_epochs=10,param=-1):
 	            running_accuracy += batch_acc
 	        running_error /= train_data.num_batches
 	        running_accuracy /= train_data.num_batches
-	        print('End of epoch {0:02d}: err(train)={1:.2f} acc(train)={2:.2f}'
-	              .format(e + 1, running_error, running_accuracy))
+	        print('End of epoch {0:02d} for {3}: err(train)={1:.2f} acc(train)={2:.2f}'
+	              .format(e + 1, running_error, running_accuracy,meta))
 	        
 	        if (e + 1) % 5 == 0:
 	            valid_error = 0.
@@ -80,17 +87,49 @@ def runNetwork(num_epochs=10,param=-1):
 	            print('                 err(valid)={0:.2f} acc(valid)={1:.2f}'
 	                   .format(valid_error, valid_accuracy))
 	            
-	            epoch_res_dict[e] = {
+	            epoch_res_dict[e+1] = {
             		'train_err':running_error,
             		'train_acc':running_accuracy,
             		'valid_err':valid_error,
             		'valid_acc':valid_accuracy
 	            }
 
-	            return((epoch_res_dict, meta))
+	return((meta,epoch_res_dict))
 
 
-setUpNetwork()
-results = runNetwork()
-print (results)
+TAG = 'hidden_units_layers_2'
+tested_params = [{
+			'num_hidden': 100,
+			'num_epochs': 5,
+			'layers': 2
+			},{
+			'num_hidden': 200,
+			'num_epochs': 5,
+			'layers': 2
+			},{
+			'num_hidden': 300,
+			'num_epochs': 5,
+			'layers': 2
+			},{
+			'num_hidden': 400,
+			'num_epochs': 5,
+			'layers': 2
+			},{
+			'num_hidden': 500,
+			'num_epochs': 5,
+			'layers': 2
+			},{
+			'num_hidden': 600,
+			'num_epochs': 5,
+			'layers': 2
+			}
+
+]
+pool = ThreadPool(len(tested_params))
+results = pool.map(runNetwork, tested_params)
+print results
+cPickle.dump(results, open('results/'+TAG+'.p', "wb"))
+
+#results = runNetwork()
+#print (results)
 
