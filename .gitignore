@@ -59,5 +59,7 @@ docs/_build/
 # PyBuilder
 target/
 
-data/
+cifar-10-train-original.npz
+cifar-10-valid-original.npz
+
 

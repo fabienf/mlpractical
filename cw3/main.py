@@ -1,10 +1,11 @@
 import os
 import tensorflow as tf
 import numpy as np
-from mlp.data_providers import CIFAR10DataProvider, CIFAR100DataProvider
+from mlp.data_providers import CIFAR10DataProvider, CIFAR100DataProvider, AugmentedCIFAR10DataProvider
 import matplotlib.pyplot as plt
 from multiprocessing.dummy import Pool as ThreadPool
 import cPickle
+
 
 
 
@@ -19,6 +20,14 @@ def fully_connected_layer(inputs, input_dim, output_dim, nonlinearity=tf.nn.relu
 
 
 
+def transform_grey(inputs):
+	new_inputs = []
+	for image in inputs:
+		grey = np.zeros(shape=(1024))
+		for x in range(1024):
+			grey[x] = (image[x]+image[x+1024]+image[x+2048])/3.0
+		new_inputs.append(grey)
+	return new_inputs
 
 
 def runNetwork(meta=None):
@@ -40,8 +49,10 @@ def runNetwork(meta=None):
 
 	with tf.name_scope('fc-layer-1'):
 	    hidden_1 = fully_connected_layer(inputs, train_data.inputs.shape[1], meta['num_hidden'])
+	with tf.name_scope('fc-layer-2'):
+	    hidden_2 = fully_connected_layer(hidden_1, meta['num_hidden'], meta['num_hidden'])
 	with tf.name_scope('output-layer'):
-	    outputs = fully_connected_layer(hidden_1, meta['num_hidden'], train_data.num_classes, tf.identity)
+	    outputs = fully_connected_layer(hidden_2, meta['num_hidden'], train_data.num_classes, tf.identity)
 
 	with tf.name_scope('error'):
 	    error = tf.reduce_mean(
@@ -98,38 +109,61 @@ def runNetwork(meta=None):
 
 
 TAG = 'hidden_units_layers_2'
+'''
 tested_params = [{
 			'num_hidden': 100,
-			'num_epochs': 5,
+			'num_epochs': 80,
 			'layers': 2
 			},{
 			'num_hidden': 200,
-			'num_epochs': 5,
+			'num_epochs': 80,
 			'layers': 2
 			},{
 			'num_hidden': 300,
-			'num_epochs': 5,
+			'num_epochs': 80,
 			'layers': 2
 			},{
 			'num_hidden': 400,
-			'num_epochs': 5,
+			'num_epochs': 80,
 			'layers': 2
 			},{
 			'num_hidden': 500,
-			'num_epochs': 5,
+			'num_epochs': 80,
 			'layers': 2
 			},{
 			'num_hidden': 600,
-			'num_epochs': 5,
+			'num_epochs': 80,
 			'layers': 2
 			}
 
 ]
+'''
+tested_params = [{
+			'num_hidden': 400,
+			'num_epochs': 80,
+			'layers': 3
+			}
+]
+
 pool = ThreadPool(len(tested_params))
 results = pool.map(runNetwork, tested_params)
 print results
 cPickle.dump(results, open('results/'+TAG+'.p', "wb"))
 
-#results = runNetwork()
-#print (results)
 
+'''
+train_data = AugmentedCIFAR10DataProvider('train', batch_size=50, transformer = transform_grey)
+
+get_images = train_data.next()[0]
+
+image = get_images[0]
+
+import matplotlib.cm as cm 
+
+plt.imshow(image.reshape((32,32)), cmap = cm.Greys_r)
+plt.show()
+
+
+results = runNetwork()
+print (results)
+'''
