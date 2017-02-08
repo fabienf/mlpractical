@@ -49,12 +49,12 @@ def runNetwork(meta=None):
 
 	with tf.name_scope('fc-layer-1'):
 	    hidden_1 = fully_connected_layer(inputs, train_data.inputs.shape[1], meta['num_hidden'])
-	'''
+	
 	with tf.name_scope('fc-layer-2'):
 	    hidden_2 = fully_connected_layer(hidden_1, meta['num_hidden'], meta['num_hidden'])
-	'''
+	
 	with tf.name_scope('output-layer'):
-	    outputs = fully_connected_layer(hidden_1, meta['num_hidden'], train_data.num_classes, tf.identity)
+	    outputs = fully_connected_layer(hidden_2, meta['num_hidden'], train_data.num_classes, tf.identity)
 
 	with tf.name_scope('error'):
 	    error = tf.reduce_mean(
@@ -110,39 +110,33 @@ def runNetwork(meta=None):
 	return((meta,epoch_res_dict))
 
 
-TAG = 'hidden_units_layers_2'
+TAG = 'hidden_units_layers_3'
 
 tested_params = [{
 			'num_hidden': 100,
 			'num_epochs': 100,
-			'layers': 2
+			'layers': 3
 			},{
 			'num_hidden': 500,
 			'num_epochs': 100,
-			'layers': 2
+			'layers': 3
 			},{
 			'num_hidden': 1000,
 			'num_epochs': 100,
-			'layers': 2
+			'layers': 3
 			},{
 			'num_hidden': 2000,
 			'num_epochs': 100,
-			'layers': 2
+			'layers': 3
 			},{
 			'num_hidden': 5000,
 			'num_epochs': 100,
-			'layers': 2
+			'layers': 3
 			}
 
 ]
-'''
-tested_params = [{
-			'num_hidden': 400,
-			'num_epochs': 80,
-			'layers': 3
-			}
-]
-'''
+
+
 
 pool = ThreadPool(len(tested_params))
 results = pool.map(runNetwork, tested_params)
