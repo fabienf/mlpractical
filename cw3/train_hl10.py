@@ -55,9 +55,22 @@ def runNetwork(meta=None):
 	
 	with tf.name_scope('fc-layer-3'):
 	    hidden_3 = fully_connected_layer(hidden_2, meta['num_hidden'], meta['num_hidden'])
+
+	with tf.name_scope('fc-layer-4'):
+	    hidden_4 = fully_connected_layer(hidden_3, meta['num_hidden'], meta['num_hidden'])
+	with tf.name_scope('fc-layer-5'):
+	    hidden_5 = fully_connected_layer(hidden_4, meta['num_hidden'], meta['num_hidden'])
+	with tf.name_scope('fc-layer-6'):
+	    hidden_6 = fully_connected_layer(hidden_5, meta['num_hidden'], meta['num_hidden'])
+	with tf.name_scope('fc-layer-7'):
+	    hidden_7 = fully_connected_layer(hidden_6, meta['num_hidden'], meta['num_hidden'])
+	with tf.name_scope('fc-layer-8'):
+	    hidden_8 = fully_connected_layer(hidden_7, meta['num_hidden'], meta['num_hidden'])
+	with tf.name_scope('fc-layer-9'):
+	    hidden_9 = fully_connected_layer(hidden_8, meta['num_hidden'], meta['num_hidden'])
 	
 	with tf.name_scope('output-layer'):
-	    outputs = fully_connected_layer(hidden_3, meta['num_hidden'], train_data.num_classes, tf.identity)
+	    outputs = fully_connected_layer(hidden_9, meta['num_hidden'], train_data.num_classes, tf.identity)
 
 	with tf.name_scope('error'):
 	    error = tf.reduce_mean(
@@ -113,28 +126,28 @@ def runNetwork(meta=None):
 	return((meta,epoch_res_dict))
 
 
-TAG = 'hidden_units_layers_4'
+TAG = 'hidden_units_layers_10'
 
 tested_params = [{
 			'num_hidden': 100,
 			'num_epochs': 100,
-			'layers': 4
+			'layers': 10
 			},{
 			'num_hidden': 500,
 			'num_epochs': 100,
-			'layers': 4
+			'layers': 10
 			},{
 			'num_hidden': 1000,
 			'num_epochs': 100,
-			'layers': 4
+			'layers': 10
 			},{
 			'num_hidden': 2000,
 			'num_epochs': 100,
-			'layers': 4
+			'layers': 10
 			},{
 			'num_hidden': 5000,
 			'num_epochs': 100,
-			'layers': 4
+			'layers': 10
 			}
 
 ]
