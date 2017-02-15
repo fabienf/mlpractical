@@ -133,11 +133,7 @@ tested_params = [{
             'num_epochs': 50,
             'layers': 2
             },{
-            'num_hidden': 2000,
-            'num_epochs': 50,
-            'layers': 2
-            },{
-            'num_hidden': 5000,
+            'num_hidden': 200,
             'num_epochs': 50,
             'layers': 2
             }
