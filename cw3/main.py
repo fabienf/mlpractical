@@ -64,8 +64,8 @@ def runNetwork(meta=None):
                 tf.equal(tf.argmax(outputs, 1), tf.argmax(targets, 1)), 
                 tf.float32))
 
-    beta = 0.01
-    regularizers = tf.nn.l2_loss(weights_1) + tf.nn.l2_loss(weights_2)
+    beta = 0.001
+    regularizers = tf.nn.l2_loss(weights_1)
     loss = tf.reduce_mean(error + beta * regularizers)
 
     with tf.name_scope('train'):
@@ -140,9 +140,9 @@ tested_params = [{
 ]
 '''
 tested_params = [{
-            'num_hidden': 400,
-            'num_epochs': 80,
-            'layers': 3
+            'num_hidden': 100,
+            'num_epochs': 50,
+            'layers': 2
             }
 ]
 
