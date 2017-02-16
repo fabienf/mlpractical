@@ -42,7 +42,7 @@ data augmentation & horizontal reflection  \\
 \hline
 batch size & 50   \\
 \hline
-result accuracy & 55\%   \\
+result accuracy C-10& 55\%   \\
 \hline
 \end{tabular} 
 \caption{Model parameters}
@@ -50,7 +50,6 @@ result accuracy & 55\%   \\
 \end{table}
 
 
-\section*{Questions}
 
 \subsection*{Colour Spaces}
 
@@ -83,7 +82,7 @@ Greyscale pre-processing shows a significant time saving, however a larger decre
 
 \subsection*{Architectures}
 
-Different model architectures were explored in terms of number of layers and number of hidden units. The exploration was initially done on the grayscale pre-processed dataset after showing that the explored architectures respond similarly to grayscale and RGB input data. A greater number of architectures were explored by leveraging the time saving of having a smaller input dimension of the grayscale datasest. The found best performing greyscale based architectures were compared to the RGB space ones to ensure this correlation was not broken and that an optimal architecture would be found for the RGB space. The explored experiment results are displayed on Figure \ref{fig:arch}, showing that too wide or deep networks are too complex for our dataset as they decrease the classification performance.
+Different model architectures were explored in terms of number of layers and number of hidden units. The exploration was initially done on the greyscale pre-processed dataset after showing that the explored architectures respond similarly to greyscale and RGB input data. A greater number of architectures were explored by leveraging the time saving of having a smaller input dimension of the greyscale datasest. The found best performing greyscale based architectures were compared to the RGB space ones to ensure this correlation was not broken and that an optimal architecture would be found for the RGB space. The explored experiment results are displayed on Figure \ref{fig:arch}, showing that too wide or deep networks are too complex for our dataset as they decrease the classification performance.
 
 \begin{figure*}[ht!]
     \centering
@@ -151,7 +150,7 @@ Other explored augmentations were random brightness and a mix of well performing
 
 \subsection*{Regularization}
 
-The topic of regularization was also explored. Data augmentation can be seen as a form of regularization on it's own. L2 and dropout were introduced by themselves and in unison to see whether they can prevent over-fitting and increase the classification accuracy. Figure \ref{fig:reg} compares the model so far and the model with applied regularization.
+The topic of regularization was also explored. Data augmentation can be seen as a form of regularization on it's own. L2 (beta = 0.001) and dropout (keep prob=0.8) were introduced by themselves and in unison to see whether they can prevent over-fitting and increase the classification accuracy. Figure \ref{fig:reg} compares the model so far and the model with applied regularization.
 
 \begin{figure*}[ht!]
     \centering
@@ -175,10 +174,41 @@ The results showed decrease in performance when using both L2 or dropout alone a
 The network in use has been built using Tensorflow, this section touches on what has been added compared to the vanilla code provided. The features mentioned will go in line with the order of sections above. Data pre-processing consisted of a script which read the original npz file to transform in to a different colour space. The dataset has been pre-processed as doing this operation on-the-fly proved to be too slow.
 The model consisted of a number of fully connected layers as were provided in the vanilla code. Tensorflow's train library was leveraged for all optimizers used, needing to change only one line in order to switch to a new learning rate schedule. Similarly for regularization, Tensorflow's nn library was used for the L2 and dropout functions.
 
+
+\subsection*{Discussion}
+
+
+
+This section will discuss the results from each of the sections above. All of the models were trained on the CIFAR-10 dataset as this was already a complex enough task and CIFAR-100 would bring a new set of challenges that could not be explored until a solid enough model for CIFAR-10 was created. The largest problem being CIFAR-100's sparsity of data. However a lot of conclusions from CIFAR-10 are transferable, the grayscale pre-pocessing and most importantly data-augmentation. However CIFAR-100 would likely need a different architecture, for this reason the dataset will be explored in the next coursework using the results from CIFAR-10.
+\\
+
+
+The pre-porcessed datasets were divided into two cathegories : coloured (HSV,RGB) and greyscale(various algorithms). As expected the coloured datasets performed better as they had 3 times larger dimension than the greyscale. The smaller dimension allowed to train on the greyscale dataset faster. For this reason the greyscale dataset was used to find an appropriate architecture for the RGB colour space later on since it was shown that the performance of both correlated to the same architectures. For futher work some experiments could be devised to try to lessen the difference in accuracy between the RGB and greyscale.
+\\
+
+
+When looking for an appropriate architecture two things were kept in mind : the performance and the speed of training which was depended on the number of total hidden units. Intuitively too wide or too deep networks did not perform exceptionally well as they were trying to learn too complicated features. Further interesting experiments would regard not having a constant number of units per layer, rather a pyramid shape to the softmax layer.
+\\
+
+
+Data Augmentation had great positive impact on the overall performance. It has also showed the importance of choosing logical augmentation functions for the dataset as demonstrated by the horizontal flipping example.
+\\
+
+The introductions of learning rates did not achieve the desired results as it worsened the overall accuracy. The possible cause was that it made the model too rigid to a point where it was not able to learn enough about the dataset even when the regression parameters were rather small. This could be different if the architecture were more complex as 3 layers of 200 units is rather small. Experimenting with effects of regularization on larger architectures could be interesting.
+
+
+
+
+\subsection*{Conclusion}
+
+Overall the model found was a success as it improved the performance over the vanilla neural network by over 13\%. The parameters of the network could be further optimized to achieve even a higher performance by running a grid search using tools like Spearmint on multiple parameters including number of hidden units, data augmentation parameters and learning rates. However even better results are expected to be achieved by introducing convolution in the next coursework.
+
+
+
 \begin{thebibliography}{1}
 \bibitem{grey1} Shawn McCann, Jim Reesman {\em Object Detection using Convolutional Neural Networks} 
 \bibitem{grey2} Dan Ciresan, Ueli Meier, Jurgen Schmidhuber {\em Multi-column Deep Neural Networks for Image Classification}, 2012
-\bibitem{grey3} Tanner Helland {\em Seven grayscale conversion algorithms (with pseudocode and VB6 source code)}, http://www.tannerhelland.com/3643/grayscale-image-algorithm-vb6/
+\bibitem{grey3} Tanner Helland {\em Seven greyscale conversion algorithms (with pseudocode and VB6 source code)}, http://www.tannerhelland.com/3643/greyscale-image-algorithm-vb6/
 \bibitem{Ada} Duchi et al, http://jmlr.org/papers/v12/duchi11a.html
 \bibitem{Adam} Kingma, Ba, https://arxiv.org/abs/1412.6980
 \bibitem{AdaD} Matthew D. Zeiler {\em ADADELTA An Adaptive Learning Rate Method}
