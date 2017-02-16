@@ -53,7 +53,7 @@ result accuracy C-10& 55\%   \\
 
 \subsection*{Colour Spaces}
 
-A number of papers mention preprocessing the CIFAR dataset by converting each image into grey-scale\cite{grey1}\cite{grey2}. These papers suggest the worth of slightly drop-off in performance for the time saving caused by having 3 times smaller input size. Three colour spaces were explored : the original RGB, HSV and greyscale. Within the greyscale spectrum exist numerous algorithms to transform a RGB image into greyscale\cite{grey3}. Despite the differences between the conversion algorithms their effect on classification performance was minimal. All of the algorithms were implemented as scripts ran on the original CIFAR dataset, creating a new pre-processed one. The comparison of the colour space impact on classification performance is displayed on Figure \ref{fig:colour} and with respect to time on Table \ref{tab:colour}.
+A number of papers mention pre-processing the CIFAR dataset by converting each image into grey-scale\cite{grey1}\cite{grey2}. These papers suggest the worth of slightly drop-off in performance for the time saving caused by having 3 times smaller input size. Three colour spaces were explored : the original RGB, HSV and greyscale. Within the greyscale spectrum exist numerous algorithms to transform a RGB image into greyscale\cite{grey3}. Despite the differences between the conversion algorithms their effect on classification performance was minimal. All of the algorithms were implemented as scripts ran on the original CIFAR dataset, creating a new pre-processed one. The comparison of the colour space impact on classification performance is displayed on Figure \ref{fig:colour} and with respect to time on Table \ref{tab:colour}.
 
 \begin{figure}[H]
 \centering
@@ -187,14 +187,14 @@ The pre-porcessed datasets were divided into two cathegories : coloured (HSV,RGB
 \\
 
 
-When looking for an appropriate architecture two things were kept in mind : the performance and the speed of training which was depended on the number of total hidden units. Intuitively too wide or too deep networks did not perform exceptionally well as they were trying to learn too complicated features. Further interesting experiments would regard not having a constant number of units per layer, rather a pyramid shape to the softmax layer.
+When looking for an appropriate architecture two things were kept in mind : the performance and the speed of training which was dependent on the number of total hidden units. Intuitively too wide or too deep networks did not perform exceptionally well as they were trying to learn too complicated features. Further interesting experiments would regard not having a constant number of units per layer, rather a pyramid shape to the softmax layer.
 \\
 
 
-Data Augmentation had great positive impact on the overall performance. It has also showed the importance of choosing logical augmentation functions for the dataset as demonstrated by the horizontal flipping example.
+Data Augmentation had a great positive impact on the overall performance. It has also showed the importance of choosing logical augmentation functions for the dataset as demonstrated by the horizontal flipping example.
 \\
 
-The introductions of learning rates did not achieve the desired results as it worsened the overall accuracy. The possible cause was that it made the model too rigid to a point where it was not able to learn enough about the dataset even when the regression parameters were rather small. This could be different if the architecture were more complex as 3 layers of 200 units is rather small. Experimenting with effects of regularization on larger architectures could be interesting.
+The introductions of regularization did not achieve the desired results as it worsened the overall accuracy. The possible cause was that it made the model too rigid to a point where it was not able to learn enough about the dataset even when the regression parameters were rather small. This could be different if the architecture were more complex as 3 layers of 200 units is rather small. Experimenting with effects of regularization on larger architectures could be interesting.
 
 
 
