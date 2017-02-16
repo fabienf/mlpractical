@@ -300,15 +300,19 @@ class AugmentedCIFAR10DataProvider(OneOfKDataProvider):
         super(AugmentedCIFAR10DataProvider, self).__init__(
             inputs, targets, batch_size, max_num_batches, shuffle_order, rng)
         self.transformer = transformer
+        self.rng = rng
+
+
+
 
     def next(self):
         """Returns next data batch or raises `StopIteration` if at end."""
         inputs_batch, targets_batch = super(
             AugmentedCIFAR10DataProvider, self).next()
-        transformed_inputs_batch = self.transformer(inputs_batch)
+        transformed_inputs_batch = self.transformer(inputs_batch,self.rng)
         return transformed_inputs_batch, targets_batch
 
-
+\
 
 
 class CIFAR100DataProvider(OneOfKDataProvider):

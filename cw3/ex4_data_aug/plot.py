@@ -2,7 +2,7 @@ import cPickle
 import matplotlib.pyplot as plt
 import numpy as np
 
-tag_type = 'hidden_units_layers_4_100'
+tag_type = 'hidden_units_layers_4_flip_50'
 
 
 results = cPickle.load(open('results/'+tag_type+'.p', 'rb'))

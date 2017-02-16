@@ -19,6 +19,7 @@ def fully_connected_layer(inputs, input_dim, output_dim, nonlinearity=tf.nn.relu
     return outputs, weights
 
 
+
 def transform_grey(inputs):
     new_inputs = []
     for image in inputs:
@@ -48,27 +49,34 @@ def runNetwork(meta=None):
 
     with tf.name_scope('fc-layer-1'):
         hidden_1, weights_1 = fully_connected_layer(inputs, train_data.inputs.shape[1], meta['num_hidden'])
-    '''
+    
     with tf.name_scope('fc-layer-2'):
-        hidden_2 = fully_connected_layer(hidden_1, meta['num_hidden'], meta['num_hidden'])
-    '''
+        hidden_2, weights_2 = fully_connected_layer(hidden_1, meta['num_hidden'], meta['num_hidden'])
+
+    with tf.name_scope('fc-layer-3'):
+        hidden_3, weights_3 = fully_connected_layer(hidden_2, meta['num_hidden'], meta['num_hidden'])
+    
     with tf.name_scope('output-layer'):
-        outputs,weights_2 = fully_connected_layer(hidden_1, meta['num_hidden'], train_data.num_classes, tf.identity)
+        outputs,weights_4 = fully_connected_layer(hidden_3, meta['num_hidden'], train_data.num_classes, tf.identity)
 
     with tf.name_scope('error'):
+        beta = 0.001
+        regularizers = tf.nn.l2_loss(weights_1) + tf.nn.l2_loss(weights_2) + tf.nn.l2_loss(weights_3) + tf.nn.l2_loss(weights_4)
         error = tf.reduce_mean(
-            tf.nn.softmax_cross_entropy_with_logits(outputs, targets))
+            tf.nn.softmax_cross_entropy_with_logits(outputs, targets) + beta * regularizers)
     with tf.name_scope('accuracy'):
         accuracy = tf.reduce_mean(tf.cast(
                 tf.equal(tf.argmax(outputs, 1), tf.argmax(targets, 1)), 
                 tf.float32))
 
+    '''
     beta = 0.001
-    regularizers = tf.nn.l2_loss(weights_1)
+    regularizers = tf.nn.l2_loss(weights_1) + tf.nn.l2_loss(weights_2) + tf.nn.l2_loss(weights_3) + tf.nn.l2_loss(weights_4)
     loss = tf.reduce_mean(error + beta * regularizers)
+    '''
 
     with tf.name_scope('train'):
-        train_step = tf.train.AdamOptimizer().minimize(loss)
+        train_step = tf.train.AdamOptimizer().minimize(error)
          
     init = tf.global_variables_initializer()
 
@@ -113,38 +121,15 @@ def runNetwork(meta=None):
     return((meta,epoch_res_dict))
 
 
-TAG = 'hidden_units_layers_2_reg'
-'''
-tested_params = [{
-            'num_hidden': 100,
-            'num_epochs': 100,
-            'layers': 2
-            },{
-            'num_hidden': 500,
-            'num_epochs': 100,
-            'layers': 2
-            },{
-            'num_hidden': 1000,
-            'num_epochs': 100,
-            'layers': 2
-            },{
-            'num_hidden': 2000,
-            'num_epochs': 100,
-            'layers': 2
-            },{
-            'num_hidden': 5000,
-            'num_epochs': 100,
-            'layers': 2
-            }
-]
-'''
-tested_params = [{
-            'num_hidden': 100,
-            'num_epochs': 50,
-            'layers': 2
-            }
-]
+TAG = 'hidden_units_layers_4_reg_100'
 
+
+tested_params = [{
+            'num_hidden': 100,
+            'num_epochs': 100,
+            'layers': 4
+            }
+]
 
 pool = ThreadPool(len(tested_params))
 results = pool.map(runNetwork, tested_params)
