@@ -242,9 +242,11 @@ class CIFAR10DataProvider(OneOfKDataProvider):
         # MLP_DATA_DIR environment variable should point to the data directory
         data_path = os.path.join(
             os.environ['MLP_DATA_DIR'], 'cifar-10-{0}.npz'.format(which_set))
+        '''
         assert os.path.isfile(data_path), (
             'Data file does not exist at expected path: ' + data_path
         )
+        '''
         # load data from compressed numpy file
         loaded = np.load(data_path)
         inputs, targets = loaded['inputs'], loaded['targets']

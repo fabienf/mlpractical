@@ -2,7 +2,7 @@ import cPickle
 import matplotlib.pyplot as plt
 import numpy as np
 
-tag_type = 'hidden_units_layers_4_flip_50'
+tag_type = 'hidden_units_layers_4_flip_reg'
 
 
 results = cPickle.load(open('results/'+tag_type+'.p', 'rb'))
@@ -41,7 +41,7 @@ ax_1 = fig_1.add_subplot(111)
 for meta, res_data in results:
     x = [n for n in sorted(res_data)]
     y = [res_data[n]['train_acc'] for n in sorted(res_data)]
-    ax_1.plot(x, y, label=meta)
+    ax_1.plot(x, y, label=meta['name'])
 ax_1.legend(loc=0)
 ax_1.set_xlabel('Epoch number')
 fig_1.savefig('figures/'+tag_type+'_accuracy(train).pdf')
@@ -52,7 +52,7 @@ ax_1 = fig_1.add_subplot(111)
 for meta, res_data in results:
     x = [n for n in sorted(res_data)]
     y = [res_data[n]['valid_acc'] for n in sorted(res_data)]
-    ax_1.plot(x, y, label=meta)
+    ax_1.plot(x, y, label=meta['name'])
 ax_1.legend(loc=0)
 ax_1.set_xlabel('Epoch number')
 fig_1.savefig('figures/'+tag_type+'_accuracy(valid).pdf')

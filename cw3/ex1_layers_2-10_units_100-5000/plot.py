@@ -2,7 +2,7 @@ import cPickle
 import matplotlib.pyplot as plt
 import numpy as np
 
-tag_type = 'hidden_units_layers_2_reg'
+tag_type = 'hidden_units_layers_10'
 
 
 results = cPickle.load(open('results/'+tag_type+'.p', 'rb'))
@@ -48,12 +48,12 @@ ax_1.set_xlabel('Epoch number')
 fig_1.savefig('figures/'+tag_type+'_accuracy(train).pdf')
 
 fig_1 = plt.figure(figsize=(8, 4))
-fig_1.suptitle('accuracy(valid)', fontsize=20)
+fig_1.suptitle('Hidden Layers = 9 , accuracy(valid)', fontsize=20)
 ax_1 = fig_1.add_subplot(111)
 for meta, res_data in results:
     x = [n for n in sorted(res_data)]
     y = [res_data[n]['valid_acc'] for n in sorted(res_data)]
-    ax_1.plot(x, y, label=meta)
+    ax_1.plot(x, y, label='Hidden units : ' + str(meta['num_hidden']))
 ax_1.legend(loc=0)
 ax_1.set_xlabel('Epoch number')
 fig_1.savefig('figures/'+tag_type+'_accuracy(valid).pdf')
