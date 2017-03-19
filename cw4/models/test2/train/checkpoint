@@ -1,0 +1,2 @@
+model_checkpoint_path: "/Users/fabienflorek/Projects/mlp/mlpractical/cw4/models/test2/train/model.ckpt-1"
+all_model_checkpoint_paths: "/Users/fabienflorek/Projects/mlp/mlpractical/cw4/models/test2/train/model.ckpt-1"
