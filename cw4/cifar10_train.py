@@ -51,11 +51,11 @@ FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_string('name', 'test',
                            """Name of current model """)
-tf.app.flags.DEFINE_string('train_dir', '/Users/fabienflorek/Projects/mlp/mlpractical/cw4/models/'+FLAGS.name+'/train',
+tf.app.flags.DEFINE_string('train_dir', 'models/'+FLAGS.name+'/train',
                            """Directory where to write event logs """)
 tf.app.flags.DEFINE_boolean('log_device_placement', False,
 							"""Whether to log device placement.""")
-tf.app.flags.DEFINE_integer('num_train_examples', 50000,
+tf.app.flags.DEFINE_integer('num_train_examples', 40000,
 							"""Number of training data examples""")
 tf.app.flags.DEFINE_integer('batch_size', 128,
                             """Number of images to process in a batch.""")
@@ -170,7 +170,7 @@ def train():
 							 tf.train.NanTensorHook(loss),
 							 _LoggerHook()],
 				#save_checkpoint_secs=None,
-				save_checkpoint_secs=100,
+				save_checkpoint_secs=50,
 				save_summaries_steps=100,
 				config=tf.ConfigProto(
 						log_device_placement=FLAGS.log_device_placement)) as mon_sess:
