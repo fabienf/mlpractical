@@ -64,7 +64,7 @@ tf.app.flags.DEFINE_integer('num_epochs', 10,
 import cifar10_eval
 
 
-def train():
+def train(do_frac):
 	"""Train CIFAR-10 for a number of steps."""
 	with tf.Graph().as_default() as g:
 		global_step = tf.contrib.framework.get_or_create_global_step()
@@ -161,7 +161,7 @@ def main(argv=None):  # pylint: disable=unused-argument
 		tf.gfile.DeleteRecursively(FLAGS.train_dir)
 	tf.gfile.MakeDirs(FLAGS.train_dir)
 	cifar10_eval.evalDelFolders()
-	train()
+	train(False)
 
 
 if __name__ == '__main__':

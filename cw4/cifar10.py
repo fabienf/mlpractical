@@ -320,6 +320,112 @@ def inference(images):
 		# Move everything into depth so we can perform a single matrix multiply.
 		reshape = tf.reshape(pool2, [FLAGS.batch_size, -1])
 		dim = reshape.get_shape()[1].value
+		weights = _variable_with_weight_decay('weights', shape=[dim, 400],
+																					stddev=0.04, wd=0.004)
+		biases = _variable_on_cpu('biases', [400], tf.constant_initializer(0.1))
+		local3 = tf.nn.relu(tf.matmul(reshape, weights) + biases, name=scope.name)
+		_activation_summary(local3)
+
+	# local4
+	with tf.variable_scope('local4') as scope:
+		weights = _variable_with_weight_decay('weights', shape=[400, 200],
+																					stddev=0.04, wd=0.004)
+		biases = _variable_on_cpu('biases', [200], tf.constant_initializer(0.1))
+		local4 = tf.nn.relu(tf.matmul(local3, weights) + biases, name=scope.name)
+		_activation_summary(local4)
+
+
+	# linear layer(WX + b),
+	# We don't apply softmax here because
+	# tf.nn.sparse_softmax_cross_entropy_with_logits accepts the unscaled logits
+	# and performs the softmax internally for efficiency.
+	with tf.variable_scope('softmax_linear') as scope:
+		weights = _variable_with_weight_decay('weights', [200, NUM_CLASSES],
+																					stddev=1/200.0, wd=0.0)
+		biases = _variable_on_cpu('biases', [NUM_CLASSES],
+															tf.constant_initializer(0.0))
+		softmax_linear = tf.add(tf.matmul(local4, weights), biases, name=scope.name)
+		_activation_summary(softmax_linear)
+
+	return softmax_linear
+
+
+def inference_frac(images):
+
+	"""Build the CIFAR-10 model.
+
+	Args:
+		images: Images returned from distorted_inputs() or inputs().
+
+	Returns:
+		Logits.
+	"""
+	
+	with tf.variable_scope('conv1') as scope:
+		kernel = _variable_with_weight_decay('weights',
+																				 shape=[FLAGS.kernel_size, FLAGS.kernel_size, 3, 64],
+																				 stddev=5e-2,
+																				 wd=0.0)
+		conv = tf.nn.conv2d(images, kernel, [1, FLAGS.kernel_stride, FLAGS.kernel_stride, 1], padding='SAME')
+		biases = _variable_on_cpu('biases', [64], tf.constant_initializer(0.0))
+		pre_activation = tf.nn.bias_add(conv, biases)
+		conv1 = tf.nn.relu(pre_activation, name=scope.name)
+		_activation_summary(conv1)
+
+	# pool1
+	pool1,_,_ = tf.nn.fractional_max_pool(conv1, [1,1.4,1.4,1], pseudo_random=True, name='pool1')
+
+
+	# conv2
+	with tf.variable_scope('conv2') as scope:
+		kernel = _variable_with_weight_decay('weights',
+																				 shape=[FLAGS.kernel_size, FLAGS.kernel_size, 64, 64],
+																				 stddev=5e-2,
+																				 wd=0.0)
+		conv = tf.nn.conv2d(pool1, kernel, [1, FLAGS.kernel_stride, FLAGS.kernel_stride, 1], padding='SAME')
+		biases = _variable_on_cpu('biases', [64], tf.constant_initializer(0.1))
+		pre_activation = tf.nn.bias_add(conv, biases)
+		conv2 = tf.nn.relu(pre_activation, name=scope.name)
+		_activation_summary(conv2)
+
+
+	# pool2
+	pool2,_,_ = tf.nn.fractional_max_pool(conv2, [1,1.4,1.4,1], pseudo_random=True, name='pool2')
+
+	with tf.variable_scope('conv3') as scope:
+		kernel = _variable_with_weight_decay('weights',
+																				 shape=[FLAGS.kernel_size, FLAGS.kernel_size, 64, 64],
+																				 stddev=5e-2,
+																				 wd=0.0)
+		conv = tf.nn.conv2d(pool2, kernel, [1, FLAGS.kernel_stride, FLAGS.kernel_stride, 1], padding='SAME')
+		biases = _variable_on_cpu('biases', [64], tf.constant_initializer(0.1))
+		pre_activation = tf.nn.bias_add(conv, biases)
+		conv3 = tf.nn.relu(pre_activation, name=scope.name)
+		_activation_summary(conv3)
+
+		# pool2
+	pool3,_,_ = tf.nn.fractional_max_pool(conv3, [1,1.4,1.4,1], pseudo_random=True, name='pool3')
+
+	with tf.variable_scope('conv4') as scope:
+		kernel = _variable_with_weight_decay('weights',
+																				 shape=[FLAGS.kernel_size, FLAGS.kernel_size, 64, 64],
+																				 stddev=5e-2,
+																				 wd=0.0)
+		conv = tf.nn.conv2d(pool3, kernel, [1, FLAGS.kernel_stride, FLAGS.kernel_stride, 1], padding='SAME')
+		biases = _variable_on_cpu('biases', [64], tf.constant_initializer(0.1))
+		pre_activation = tf.nn.bias_add(conv, biases)
+		conv4 = tf.nn.relu(pre_activation, name=scope.name)
+		_activation_summary(conv4)
+
+	pool4,_,_ = tf.nn.fractional_max_pool(conv4, [1,1.4,1.4,1], pseudo_random=True, name='pool4')
+
+
+
+	# local3
+	with tf.variable_scope('local3') as scope:
+		# Move everything into depth so we can perform a single matrix multiply.
+		reshape = tf.reshape(pool4, [FLAGS.batch_size, -1])
+		dim = reshape.get_shape()[1].value
 		weights = _variable_with_weight_decay('weights', shape=[dim, 200],
 																					stddev=0.04, wd=0.004)
 		biases = _variable_on_cpu('biases', [200], tf.constant_initializer(0.1))
@@ -335,10 +441,7 @@ def inference(images):
 		_activation_summary(local4)
 
 
-	# linear layer(WX + b),
-	# We don't apply softmax here because
-	# tf.nn.sparse_softmax_cross_entropy_with_logits accepts the unscaled logits
-	# and performs the softmax internally for efficiency.
+
 	with tf.variable_scope('softmax_linear') as scope:
 		weights = _variable_with_weight_decay('weights', [200, NUM_CLASSES],
 																					stddev=1/200.0, wd=0.0)
