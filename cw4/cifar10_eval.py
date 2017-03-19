@@ -45,11 +45,11 @@ import cifar10
 
 FLAGS = tf.app.flags.FLAGS
 
-tf.app.flags.DEFINE_string('eval_dir', '/Users/fabienflorek/Projects/mlp/mlpractical/cw4/models/'+FLAGS.name+'/eval',
+tf.app.flags.DEFINE_string('eval_dir', 'models/'+FLAGS.name+'/eval',
                            """Directory where to write event logs.""")
 tf.app.flags.DEFINE_string('eval_data', 'test',
                            """Either 'test' or 'train_eval'.""")
-tf.app.flags.DEFINE_string('checkpoint_dir', '/tmp/cifar10_train',
+tf.app.flags.DEFINE_string('checkpoint_dir','models/'+FLAGS.name+'/train',
                            """Directory where to read model checkpoints.""")
 tf.app.flags.DEFINE_integer('eval_interval_secs', 60 * 5,
                             """How often to run the eval.""")
@@ -114,7 +114,7 @@ def eval_once(saver, summary_writer, top_k_op, accuracy, loss, summary_op):
       summary.value.add(tag='accuracy', simple_value=running_acc)
       summary.value.add(tag='error', simple_value=running_err)
       num_train_batches_per_epoch = math.ceil(FLAGS.num_train_examples / FLAGS.batch_size)
-      summary_writer.add_summary(summary, int(global_step)/num_train_batches_per_epoch)
+      summary_writer.add_summary(summary, int(global_step)/num_train_batches_per_epoch +1)
     except Exception as e:  # pylint: disable=broad-except
       coord.request_stop(e)
 

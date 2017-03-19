@@ -152,7 +152,7 @@ node {
       list {
         shape {
           dim {
-            size: 5
+            size: 4
           }
         }
       }
@@ -171,14 +171,13 @@ node {
         dtype: DT_STRING
         tensor_shape {
           dim {
-            size: 5
+            size: 4
           }
         }
         string_val: "/tmp/cifar10_data/cifar-10-batches-bin/data_batch_1.bin"
         string_val: "/tmp/cifar10_data/cifar-10-batches-bin/data_batch_2.bin"
         string_val: "/tmp/cifar10_data/cifar-10-batches-bin/data_batch_3.bin"
         string_val: "/tmp/cifar10_data/cifar-10-batches-bin/data_batch_4.bin"
-        string_val: "/tmp/cifar10_data/cifar-10-batches-bin/data_batch_5.bin"
       }
     }
   }
@@ -208,7 +207,7 @@ node {
         dtype: DT_INT32
         tensor_shape {
         }
-        int_val: 5
+        int_val: 4
       }
     }
   }
@@ -361,7 +360,7 @@ node {
       list {
         shape {
           dim {
-            size: 5
+            size: 4
           }
         }
       }
@@ -384,7 +383,7 @@ node {
       list {
         shape {
           dim {
-            size: 5
+            size: 4
           }
         }
       }
@@ -3169,7 +3168,7 @@ node {
   attr {
     key: "capacity"
     value {
-      i: 20384
+      i: 16384
     }
   }
   attr {
@@ -3190,7 +3189,7 @@ node {
   attr {
     key: "min_after_dequeue"
     value {
-      i: 20000
+      i: 16000
     }
   }
   attr {
@@ -3350,7 +3349,7 @@ node {
         dtype: DT_INT32
         tensor_shape {
         }
-        int_val: 20000
+        int_val: 16000
       }
     }
   }
@@ -3505,7 +3504,7 @@ node {
   }
 }
 node {
-  name: "shuffle_batch/queue/shuffle_batch/fraction_over_20000_of_384_full/tags"
+  name: "shuffle_batch/queue/shuffle_batch/fraction_over_16000_of_384_full/tags"
   op: "Const"
   attr {
     key: "_output_shapes"
@@ -3529,15 +3528,15 @@ node {
         dtype: DT_STRING
         tensor_shape {
         }
-        string_val: "shuffle_batch/queue/shuffle_batch/fraction_over_20000_of_384_full"
+        string_val: "shuffle_batch/queue/shuffle_batch/fraction_over_16000_of_384_full"
       }
     }
   }
 }
 node {
-  name: "shuffle_batch/queue/shuffle_batch/fraction_over_20000_of_384_full"
+  name: "shuffle_batch/queue/shuffle_batch/fraction_over_16000_of_384_full"
   op: "ScalarSummary"
-  input: "shuffle_batch/queue/shuffle_batch/fraction_over_20000_of_384_full/tags"
+  input: "shuffle_batch/queue/shuffle_batch/fraction_over_16000_of_384_full/tags"
   input: "shuffle_batch/mul"
   attr {
     key: "T"
@@ -4917,62 +4916,6 @@ node {
   }
 }
 node {
-  name: "norm1"
-  op: "LRN"
-  input: "pool1"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "_output_shapes"
-    value {
-      list {
-        shape {
-          dim {
-            size: 128
-          }
-          dim {
-            size: 12
-          }
-          dim {
-            size: 12
-          }
-          dim {
-            size: 64
-          }
-        }
-      }
-    }
-  }
-  attr {
-    key: "alpha"
-    value {
-      f: 0.000111111111111
-    }
-  }
-  attr {
-    key: "beta"
-    value {
-      f: 0.75
-    }
-  }
-  attr {
-    key: "bias"
-    value {
-      f: 1.0
-    }
-  }
-  attr {
-    key: "depth_radius"
-    value {
-      i: 4
-    }
-  }
-}
-node {
   name: "conv2/weights"
   op: "Variable"
   device: "/device:CPU:0"
@@ -5470,7 +5413,7 @@ node {
 node {
   name: "conv2/Conv2D"
   op: "Conv2D"
-  input: "norm1"
+  input: "pool1"
   input: "conv2/weights/read"
   attr {
     key: "T"
@@ -6040,65 +5983,9 @@ node {
   }
 }
 node {
-  name: "norm2"
-  op: "LRN"
-  input: "conv2/conv2"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "_output_shapes"
-    value {
-      list {
-        shape {
-          dim {
-            size: 128
-          }
-          dim {
-            size: 12
-          }
-          dim {
-            size: 12
-          }
-          dim {
-            size: 64
-          }
-        }
-      }
-    }
-  }
-  attr {
-    key: "alpha"
-    value {
-      f: 0.000111111111111
-    }
-  }
-  attr {
-    key: "beta"
-    value {
-      f: 0.75
-    }
-  }
-  attr {
-    key: "bias"
-    value {
-      f: 1.0
-    }
-  }
-  attr {
-    key: "depth_radius"
-    value {
-      i: 4
-    }
-  }
-}
-node {
   name: "pool2"
   op: "MaxPool"
-  input: "norm2"
+  input: "conv2/conv2"
   attr {
     key: "T"
     value {
@@ -9615,7 +9502,7 @@ node {
         dtype: DT_INT32
         tensor_shape {
         }
-        int_val: 136718
+        int_val: 109375
       }
     }
   }
@@ -21811,7 +21698,7 @@ node {
 node {
   name: "gradients/pool2_grad/MaxPoolGrad"
   op: "MaxPoolGrad"
-  input: "norm2"
+  input: "conv2/conv2"
   input: "pool2"
   input: "gradients/local3/Reshape_grad/Reshape"
   attr {
@@ -21877,67 +21764,9 @@ node {
   }
 }
 node {
-  name: "gradients/norm2_grad/LRNGrad"
-  op: "LRNGrad"
-  input: "gradients/pool2_grad/MaxPoolGrad"
-  input: "conv2/conv2"
-  input: "norm2"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "_output_shapes"
-    value {
-      list {
-        shape {
-          dim {
-            size: 128
-          }
-          dim {
-            size: 12
-          }
-          dim {
-            size: 12
-          }
-          dim {
-            size: 64
-          }
-        }
-      }
-    }
-  }
-  attr {
-    key: "alpha"
-    value {
-      f: 0.000111111111111
-    }
-  }
-  attr {
-    key: "beta"
-    value {
-      f: 0.75
-    }
-  }
-  attr {
-    key: "bias"
-    value {
-      f: 1.0
-    }
-  }
-  attr {
-    key: "depth_radius"
-    value {
-      i: 4
-    }
-  }
-}
-node {
   name: "gradients/conv2/conv2_grad/ReluGrad"
   op: "ReluGrad"
-  input: "gradients/norm2_grad/LRNGrad"
+  input: "gradients/pool2_grad/MaxPoolGrad"
   input: "conv2/conv2"
   attr {
     key: "T"
@@ -22216,7 +22045,7 @@ node {
 node {
   name: "gradients/conv2/Conv2D_grad/Conv2DBackpropFilter"
   op: "Conv2DBackpropFilter"
-  input: "norm1"
+  input: "pool1"
   input: "gradients/conv2/Conv2D_grad/Shape_1"
   input: "gradients/conv2/BiasAdd_grad/tuple/control_dependency"
   attr {
@@ -22366,116 +22195,11 @@ node {
   }
 }
 node {
-  name: "gradients/norm1_grad/LRNGrad"
-  op: "LRNGrad"
-  input: "gradients/conv2/Conv2D_grad/tuple/control_dependency"
-  input: "pool1"
-  input: "norm1"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "_output_shapes"
-    value {
-      list {
-        shape {
-          dim {
-            size: 128
-          }
-          dim {
-            size: 12
-          }
-          dim {
-            size: 12
-          }
-          dim {
-            size: 64
-          }
-        }
-      }
-    }
-  }
-  attr {
-    key: "alpha"
-    value {
-      f: 0.000111111111111
-    }
-  }
-  attr {
-    key: "beta"
-    value {
-      f: 0.75
-    }
-  }
-  attr {
-    key: "bias"
-    value {
-      f: 1.0
-    }
-  }
-  attr {
-    key: "depth_radius"
-    value {
-      i: 4
-    }
-  }
-}
-node {
-  name: "gradients/AddN_3"
-  op: "AddN"
-  input: "gradients/conv2/L2Loss_grad/mul"
-  input: "gradients/conv2/Conv2D_grad/tuple/control_dependency_1"
-  attr {
-    key: "N"
-    value {
-      i: 2
-    }
-  }
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "_class"
-    value {
-      list {
-        s: "loc:@gradients/conv2/L2Loss_grad/mul"
-      }
-    }
-  }
-  attr {
-    key: "_output_shapes"
-    value {
-      list {
-        shape {
-          dim {
-            size: 5
-          }
-          dim {
-            size: 5
-          }
-          dim {
-            size: 64
-          }
-          dim {
-            size: 64
-          }
-        }
-      }
-    }
-  }
-}
-node {
   name: "gradients/pool1_grad/MaxPoolGrad"
   op: "MaxPoolGrad"
   input: "conv1/conv1"
   input: "pool1"
-  input: "gradients/norm1_grad/LRNGrad"
+  input: "gradients/conv2/Conv2D_grad/tuple/control_dependency"
   attr {
     key: "T"
     value {
@@ -22534,6 +22258,53 @@ node {
         i: 2
         i: 2
         i: 1
+      }
+    }
+  }
+}
+node {
+  name: "gradients/AddN_3"
+  op: "AddN"
+  input: "gradients/conv2/L2Loss_grad/mul"
+  input: "gradients/conv2/Conv2D_grad/tuple/control_dependency_1"
+  attr {
+    key: "N"
+    value {
+      i: 2
+    }
+  }
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@gradients/conv2/L2Loss_grad/mul"
+      }
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+          dim {
+            size: 5
+          }
+          dim {
+            size: 5
+          }
+          dim {
+            size: 64
+          }
+          dim {
+            size: 64
+          }
+        }
       }
     }
   }
@@ -30389,7 +30160,7 @@ node {
   name: "Merge/MergeSummary"
   op: "MergeSummary"
   input: "input_producer/queue/input_producer/fraction_of_32_full"
-  input: "shuffle_batch/queue/shuffle_batch/fraction_over_20000_of_384_full"
+  input: "shuffle_batch/queue/shuffle_batch/fraction_over_16000_of_384_full"
   input: "images"
   input: "conv1/conv1/conv1/activations"
   input: "conv1/conv1/conv1/sparsity"
@@ -30507,7 +30278,7 @@ node {
         dtype: DT_STRING
         tensor_shape {
         }
-        string_val: "_temp_12cace60e9134568b4a5110ec97da1b0/part"
+        string_val: "_temp_efc1157a389a441887c262ae452fe716/part"
       }
     }
   }
