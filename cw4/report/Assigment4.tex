@@ -43,7 +43,7 @@ result accuracy C-10& 55\%   \\
 This coursework focuses on exploring topics regarding Convolutional Neural Networks(CNN) expecting a dramatic increase in performance that CNNs are reported to bring on image classification tasks\cite{inspiration}\cite{bestprac}\cite{frac}. More specifically the coursework will explore the following topics:
 
 \begin{itemize}
-\item What is a well performing network architecture in terms of the number of convolution, pooling and fully connected layers? This topic will use the previously learned baseline model as a starting point expecting to reach a conclusion in terms of number of layers similar to what papers exploring CIFAR suggest \cite{inspiration}. A good model architecture is needed for further topics to be explored.
+\item What is a well performing network architecture in terms of the number of convolution, pooling and fully connected layers? This topic will use the previously learned baseline model as a starting point expecting to reach a conclusion in terms of number of layers similar to what papers exploring CIFAR suggest\cite{inspiration}. A good model architecture is needed for further topics to be explored.
 \item Can further data augmentation prevent over-fitting? Despite the data aumentations explored, the previous model was still prone to overfitting. One approach that has not been explored in the previous model but reported as benefical is random cropping\cite{kernel}\cite{crop}
 \item What is an appropriate convolution filter size and stride? This question will expect to arrive to the same conclusions as many papers suggesting only few reasonable values for these \cite{inspiration}\cite{bestprac}\cite{frac}.
 \item What is an appropriate pooling type, kernel size and stride? As with the question above the expectation is to default to standard values. For this reason the question will further explore the possible benefits of fractional pooling  over max pooling as suggested by a recent paper\cite{frac}.
@@ -244,7 +244,7 @@ The comparison of performances between our standard pipeline model and and the a
 \end{figure*}
 \subsection*{Discussion}
 
-An acknowledged limitation of some of the experiments performed was the rather small number of 30 epochs. Due to computational and time complexity it was not possible to perform all of these with a larger number of epochs, with the hopes that the trends would be apparent even with this smaller number. Running some models for longer periods of time as will be shown in discussion confirm this intuition.
+The experiments were performed on CIFAR-10 as CIFAR-100 not only required a larger number of epochs to learn, but also due to an expanded number of classes can be viewed as a different dataset with it's own range of problems to be addressed. An acknowledged limitation of some of the experiments performed was the rather small number of 30 epochs. Due to computational and time complexity it was not possible to perform all of these with a larger number of epochs, with the hopes that the trends would be apparent even with this smaller number. Running some models for longer periods of time as will be shown in discussion confirm this intuition. 
 
 \subsubsection*{Network architecture}
 
@@ -290,7 +290,7 @@ This section aimed to confirm the generally accepted values\cite{kernel}\cite{in
 
 \subsubsection*{Pooling kernel size, stride length and fractional pooling}
 
-As with the section above the aim was to first explore the two generally used values for pooling 2x2 and 3x3 with stride 1 and 2 respectively. The expected results were that the 3x3 overlapping pooling will outperform the 2x2 as mentioned in some papers\cite{inspiration}\cite{frac}. The results on Figure \ref{fig:pool} reported similar performances. The larger pooling kernel size was expected to improve generalization, however due to a limited number of epoch and effective data augmentation this might have not became apparent. 
+As with the section above the aim was to first explore the two generally used values for pooling 2x2 and 3x3 with stride 1 and 2 respectively. The expected results were that the 3x3 overlapping pooling will outperform the 2x2 as mentioned in some papers\cite{inspiration}\cite{frac}. The results on Figure \ref{fig:pool} reported similar performances. The larger pooling kernel size was expected to improve generalization, however due to a limited number of epochs and effective data augmentation this might have not became apparent. 
 \\
 
 
@@ -313,7 +313,7 @@ Fractional pooling\cite{frac} was then explored which allowed to reduce the size
 
 \subsection*{The all conovolutional network}
 
-The all convolutional network\cite{allconv} is an interesting approach which replaces pooling layers with conovlutional layers with stride 2. Suggesting that it might replace and simplify the standard convolutional neural network pipeline\cite{stan}. The paper reported very positive results on CIFAR and hence was explored in this setting and compared to the previously explored models. The architecture was directly adapted from the paper, but the data with augmentations is the same as with previously explored models for comparison purposes. The results confirm the paper's suggestions improved results over our best found model so far, trained on 50 epochs for little more reliable results as shown on Figure \ref{fig:al}. Further all conovlutional architectures in terms of number of layers, filter sizes and depths could be explored. 
+The all convolutional network\cite{allconv} is an interesting approach which replaces pooling layers with conovlutional layers with stride of 2. Suggesting that it might replace and simplify the standard convolutional neural network pipeline\cite{stan}. The paper reported very positive results on CIFAR and hence was explored in this setting and compared to the previously explored models. The architecture was directly adapted from the paper, but the data with augmentations is the same as with previously explored models for comparison purposes. The results confirm the paper's suggestions improved results over our best found model so far, trained on 50 epochs for little more reliable results as shown on Figure \ref{fig:al}. Further all conovlutional architectures in terms of number of layers, filter sizes and depths could be explored. 
 
 \subsection*{Overall}
 
@@ -369,7 +369,7 @@ Accuracy &    85.3\% \\
 This coursework showed a clear motivation for using conolutional neural networks as they achieved over 25\% higher accuracy than previously explored netoworks using only fully connected layers, which coresponds to what was expected from literature\cite{inspiration}\cite{alexnet}\cite{stan}.
 The network architecture section showed that more convolutional/pooling layers tend to increase performance as they allow to learn features and features of features. This trend can be also extracted from later sections where both fractional pooling and all convolutional network benefited with a larger number of convolutional layers.
  The filter and pooling section confirmed the notion of using generally accepted values for filter and pooling sizes\cite{kernel}\cite{inspiration}\cite{bestprac}. These work well for general cases, it can however be beneficial in some cases to modify these : When the input size is larger\cite{alexnet}; When using non integer values to decrease the factor of how quickly the size degrades\cite{frac} or when using filter stride 2 to replace pooling layers\cite{allconv}.
-Two of these cases of using non-standard parameters for filters and pooling layers were explored. Both fractional pooling and all convolutional network showed improved results over the previous approches as expected from their paper\cite{frac}\cite{allconv}. The all convolutional network seems as a very interesting approach greatly simplifying the network pipeline and should be explored further. Overall the best performing model with 85.3\% accuracy on 100 epochs being the one using fractional pooling corresponding to what was expected from the literature. 
+Two of these cases of using non-standard parameters for filters and pooling layers were explored. Both fractional pooling and all convolutional network showed improved results over the previous approches as expected from their paper\cite{frac}\cite{allconv}. The all convolutional network seems as a very interesting approach greatly simplifying the network pipeline and should be explored further. Overall the best performing model with 85.3\% accuracy on 100 epochs being the one using fractional pooling corresponding to what was expected from the literature\cite{frac}. 
 
 
 
