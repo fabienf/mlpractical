@@ -59,12 +59,16 @@ tf.app.flags.DEFINE_integer('num_train_examples', 40000,
 							"""Number of training data examples""")
 tf.app.flags.DEFINE_integer('batch_size', 128,
                             """Number of images to process in a batch.""")
-tf.app.flags.DEFINE_integer('num_epochs', 10,
+tf.app.flags.DEFINE_integer('num_epochs', 30,
 							"""Number of epochs to run""")
+tf.app.flags.DEFINE_boolean('do_frac', False,
+							"""do frac""")
+tf.app.flags.DEFINE_boolean('do_conv', False,
+							"""do conv""")
 import cifar10_eval
 
 
-def train():
+def train(do_frac):
 	"""Train CIFAR-10 for a number of steps."""
 	with tf.Graph().as_default() as g:
 		global_step = tf.contrib.framework.get_or_create_global_step()
@@ -74,7 +78,12 @@ def train():
 
 		# Build a Graph that computes the logits predictions from the
 		# inference model.
-		logits = cifar10.inference(images)
+		if (FLAGS.do_frac):
+			logits = cifar10.inference_frac(images)
+		elif (FLAGS.do_conv):
+			logits = cifar10.inference_conv(images)
+		else:
+			logits = cifar10.inference(images)
 
 		# Calculate loss.
 		loss = cifar10.loss(logits, labels)
@@ -107,29 +116,6 @@ def train():
 				self._step += 1
 				self._start_time = time.time()
 				return tf.train.SessionRunArgs([loss, accuracy])  # Asks for loss value.
-			
-				
-			# def after_run(self, run_context, run_values):
-			# 	duration = time.time() - self._start_time
-			# 	loss_value = run_values.results[0]
-			# 	accuracy_value = run_values.results[1]
-			# 	if self._step % 10 == 0:
-			# 		num_examples_per_step = FLAGS.batch_size
-			# 		examples_per_sec = num_examples_per_step / duration
-			# 		sec_per_batch = float(duration)
-
-			# 		format_str = ('%s: step %d, loss = %.2f, accuracy = %.2f (%.1f examples/sec; %.3f '
-			# 									'sec/batch)')
-			# 		print (format_str % (datetime.now(), self._step, loss_value,accuracy_value,
-			# 												 examples_per_sec, sec_per_batch))
-			# 	if self._step %20 ==0:
-
-			# 		summary = tf.Summary()
-			# 		summary.value.add(tag='taccuracy', simple_value=num_examples_per_step)
-			# 		summary.value.add(tag='terror', simple_value=examples_per_sec)
-			# 		self._summary_writer.add_summary(summary, self._step)
-					
-			# 		cifar10_eval.evaluate()
 								
 			def after_run(self, run_context, run_values):
 				loss_value = run_values.results[0]
@@ -170,7 +156,7 @@ def train():
 							 tf.train.NanTensorHook(loss),
 							 _LoggerHook()],
 				#save_checkpoint_secs=None,
-				save_checkpoint_secs=50,
+				save_checkpoint_secs=5,
 				save_summaries_steps=100,
 				config=tf.ConfigProto(
 						log_device_placement=FLAGS.log_device_placement)) as mon_sess:
@@ -184,7 +170,7 @@ def main(argv=None):  # pylint: disable=unused-argument
 		tf.gfile.DeleteRecursively(FLAGS.train_dir)
 	tf.gfile.MakeDirs(FLAGS.train_dir)
 	cifar10_eval.evalDelFolders()
-	train()
+	train(False)
 
 
 if __name__ == '__main__':

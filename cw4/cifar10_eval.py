@@ -114,7 +114,7 @@ def eval_once(saver, summary_writer, top_k_op, accuracy, loss, summary_op):
       summary.value.add(tag='accuracy', simple_value=running_acc)
       summary.value.add(tag='error', simple_value=running_err)
       num_train_batches_per_epoch = math.ceil(FLAGS.num_train_examples / FLAGS.batch_size)
-      summary_writer.add_summary(summary, int(global_step)/num_train_batches_per_epoch)
+      summary_writer.add_summary(summary, int(global_step)/num_train_batches_per_epoch +1)
     except Exception as e:  # pylint: disable=broad-except
       coord.request_stop(e)
 
@@ -131,7 +131,10 @@ def evaluate():
 
     # Build a Graph that computes the logits predictions from the
     # inference model.
-    logits = cifar10.inference(images)
+    if (FLAGS.do_frac):
+      logits = cifar10.inference_frac(images)
+    else:
+      logits = cifar10.inference(images)
 
     # Calculate predictions.
     accuracy = cifar10.accuracy(logits,labels)
