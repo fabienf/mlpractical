@@ -80,7 +80,7 @@ INITIAL_LEARNING_RATE = 0.1       # Initial learning rate.
 # names of the summaries when visualizing a model.
 TOWER_NAME = 'tower'
 
-DATA_URL = 'http://www.cs.toronto.edu/~kriz/cifar-100-binary.tar.gz'
+DATA_URL = 'http://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz'
 
 
 def _activation_summary(x):
@@ -295,9 +295,9 @@ def inference(images):
 		pre_activation = tf.nn.bias_add(conv, biases)
 		conv1 = tf.nn.relu(pre_activation, name=scope.name)
 		_activation_summary(conv1)
-
+	norm1 = tf.nn.lrn(conv1, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75,name='norm2')
 	# pool1
-	pool1 = tf.nn.max_pool(conv1, ksize=[1, FLAGS.pool_size, FLAGS.pool_size, 1], strides=[1, FLAGS.pool_stride, FLAGS.pool_stride, 1],
+	pool1 = tf.nn.max_pool(norm1, ksize=[1, FLAGS.pool_size, FLAGS.pool_size, 1], strides=[1, FLAGS.pool_stride, FLAGS.pool_stride, 1],
 												 padding='SAME', name='pool1')
 
 	# conv2
@@ -312,9 +312,9 @@ def inference(images):
 		conv2 = tf.nn.relu(pre_activation, name=scope.name)
 		_activation_summary(conv2)
 
-
+	norm2 = tf.nn.lrn(conv2, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75,name='norm2')
 	# pool2
-	pool2 = tf.nn.max_pool(conv2, ksize=[1, FLAGS.pool_size, FLAGS.pool_size, 1],
+	pool2 = tf.nn.max_pool(norm2, ksize=[1, FLAGS.pool_size, FLAGS.pool_size, 1],
 												 strides=[1, FLAGS.pool_stride, FLAGS.pool_stride, 1], padding='SAME', name='pool2')
 	# conv2
 	with tf.variable_scope('conv3') as scope:
@@ -328,9 +328,9 @@ def inference(images):
 		conv3 = tf.nn.relu(pre_activation, name=scope.name)
 		_activation_summary(conv3)
 
-
+	norm3 = tf.nn.lrn(conv3, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75,name='norm2')
 	# pool2
-	pool3 = tf.nn.max_pool(conv3, ksize=[1, FLAGS.pool_size, FLAGS.pool_size, 1],
+	pool3 = tf.nn.max_pool(norm3, ksize=[1, FLAGS.pool_size, FLAGS.pool_size, 1],
 												 strides=[1, FLAGS.pool_stride, FLAGS.pool_stride, 1], padding='SAME', name='pool2')
 	# local3
 	with tf.variable_scope('local3') as scope:
@@ -442,7 +442,7 @@ def inference_conv(images):
 																				 shape=[3, 3, 192, 192],
 																				 stddev=5e-2,
 																				 wd=0.0)
-		conv = tf.nn.conv2d(conv5, kernel, [1, 2, 2, 1], padding='SAME')
+		conv = tf.nn.conv2d(conv4, kernel, [1, 2, 2, 1], padding='SAME')
 		biases = _variable_on_cpu('biases', [192], tf.constant_initializer(0.1))
 		pre_activation = tf.nn.bias_add(conv, biases)
 		conv6 = tf.nn.relu(pre_activation, name=scope.name)
@@ -555,24 +555,10 @@ def inference_frac(images):
 		_activation_summary(conv5)
 
 	pool5,_,_ = tf.nn.fractional_max_pool(conv5, [1,FLAGS.frac_pool_size,FLAGS.frac_pool_size,1], pseudo_random=True, name='pool5')
-
-	with tf.variable_scope('conv6') as scope:
-		kernel = _variable_with_weight_decay('weights',
-																				 shape=[FLAGS.kernel_size, FLAGS.kernel_size, 64, 64],
-																				 stddev=5e-2,
-																				 wd=0.0)
-		conv = tf.nn.conv2d(pool5, kernel, [1, FLAGS.kernel_stride, FLAGS.kernel_stride, 1], padding='SAME')
-		biases = _variable_on_cpu('biases', [64], tf.constant_initializer(0.1))
-		pre_activation = tf.nn.bias_add(conv, biases)
-		conv6 = tf.nn.relu(pre_activation, name=scope.name)
-		_activation_summary(conv6)
-
-	pool6,_,_ = tf.nn.fractional_max_pool(conv6, [1,FLAGS.frac_pool_size,FLAGS.frac_pool_size,1], pseudo_random=True, name='pool6')
-
 	# local3
 	with tf.variable_scope('local3') as scope:
 		# Move everything into depth so we can perform a single matrix multiply.
-		reshape = tf.reshape(pool6, [FLAGS.batch_size, -1])
+		reshape = tf.reshape(pool5, [FLAGS.batch_size, -1])
 		dim = reshape.get_shape()[1].value
 		weights = _variable_with_weight_decay('weights', shape=[dim, 200],
 																					stddev=0.04, wd=0.004)

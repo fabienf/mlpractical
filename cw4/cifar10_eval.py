@@ -133,6 +133,8 @@ def evaluate():
     # inference model.
     if (FLAGS.do_frac):
       logits = cifar10.inference_frac(images)
+    elif (FLAGS.do_conv):
+      logits = cifar10.inference_conv(images)
     else:
       logits = cifar10.inference(images)
 

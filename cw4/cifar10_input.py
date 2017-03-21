@@ -29,10 +29,10 @@ from IPython import embed
 # Process images of this size. Note that this differs from the original CIFAR
 # image size of 32 x 32. If one alters this number, then the entire model
 # architecture will change and any model would need to be retrained.
-IMAGE_SIZE = 24
+IMAGE_SIZE = 32
 
 # Global constants describing the CIFAR-10 data set.
-NUM_CLASSES = 100
+NUM_CLASSES = 10
 NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 40000
 NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = 10000
 
@@ -66,7 +66,7 @@ def read_cifar10(filename_queue):
   # Dimensions of the images in the CIFAR-10 dataset.
   # See http://www.cs.toronto.edu/~kriz/cifar.html for a description of the
   # input format.
-  label_bytes = 10  # 2 for CIFAR-100
+  label_bytes = 1  # 2 for CIFAR-100
   result.height = 32
   result.width = 32
   result.depth = 3
@@ -167,10 +167,10 @@ def distorted_inputs(data_dir, batch_size):
   # distortions applied to the image.
 
   # Randomly crop a [height, width] section of the image.
-  distorted_image = tf.random_crop(reshaped_image, [height, width, 3])
+  #distorted_image = tf.random_crop(reshaped_image, [height, width, 3])
 
   # Randomly flip the image horizontally.
-  distorted_image = tf.image.random_flip_left_right(distorted_image)
+  distorted_image = tf.image.random_flip_left_right(reshaped_image)
 
   # Because these operations are not commutative, consider randomizing
   # the order their operation.

@@ -40,19 +40,19 @@ result accuracy C-10& 55\%   \\
 \label{tab:baseline}
 \end{table}
 
-This coursework focuses on exploring topics regarding Convolutional Neural Networks(CNN) expecting a dramatic increase in performance that CNNs are reported to bring on image classification tasks\cite{inspiration}\cite{bestprac}\cite{frac}. More specifically the coursework will explore the following topics
+This coursework focuses on exploring topics regarding Convolutional Neural Networks(CNN) expecting a dramatic increase in performance that CNNs are reported to bring on image classification tasks\cite{inspiration}\cite{bestprac}\cite{frac}. More specifically the coursework will explore the following topics:
 
 \begin{itemize}
-\item What is a well performing network architecture in terms of the number of convolution, pooling and fully connected layers? This  topic will use the previously learned baseline model as a starting point expecting to reach a conclusion in terms of number of layers similar to what papers exploring CIFAR suggest \cite{inspiration}. A good model architecture is needed for further topics to be explored.
-\item Can further data augmentation prevent over-fitting? Despite the data aumentations explored the previous model was still prone to overfitting. One approach that has not been explored in the previous model but reported as benefical is random cropping\cite{kernel}\cite{crop}
+\item What is a well performing network architecture in terms of the number of convolution, pooling and fully connected layers? This topic will use the previously learned baseline model as a starting point expecting to reach a conclusion in terms of number of layers similar to what papers exploring CIFAR suggest \cite{inspiration}. A good model architecture is needed for further topics to be explored.
+\item Can further data augmentation prevent over-fitting? Despite the data aumentations explored, the previous model was still prone to overfitting. One approach that has not been explored in the previous model but reported as benefical is random cropping\cite{kernel}\cite{crop}
 \item What is an appropriate convolution filter size and stride? This question will expect to arrive to the same conclusions as many papers suggesting only few reasonable values for these \cite{inspiration}\cite{bestprac}\cite{frac}.
-\item What is an appropriate pooling type, kernel size and stride? As with the question above the expectation is to default to standard values. For this reason the question will further explore the possible benefits of fractional pooling as suggested by a recent paper\cite{frac} over max pooling.
+\item What is an appropriate pooling type, kernel size and stride? As with the question above the expectation is to default to standard values. For this reason the question will further explore the possible benefits of fractional pooling  over max pooling as suggested by a recent paper\cite{frac}.
 \item How does the performance of an all convolutional network\cite{allconv} compare? The all convolutional network replaces pooling layers by convolution layers with stride 2 and reports similar results as network with pooling layers. 
 \end{itemize}
 
 \subsection*{Implementation}
 
-The code for exploring Convolutional Neural Networks is an adaptation from the official tensorflow tutorial\cite{tf}. The tutorial code was chosen as a basis over the one developed for the previous model and given data provider for performance and structure reasons. The tutorial code takes advantages of multi-threaded way of creating queues using \textit{tf.train.batch()} and more efficient methods for data augmentation from \textit{tf.image} library. The code also uses \textit{tf.train.MonitoredTrainingSession} and hooks to output data during training which seems as a better practice, as well as better integration with tensorboard and storing checkpoints. Taking advantage of \textit{tf.app.flags} the model can be instructed from the command line to what to parameters to test, improving scalability.  This code was then adapted to work on a basis of epochs rather than step and tracking accuracy and loss on a per epoch basis. The LoggerHook attached to the MonitoredTrainingSession keeps track of undertaken steps and therefor epochs. On each epoch it stores the training accuracy and loss per epoch, as well as runs a validation script that loads the last stored model and stores the validation accuracy and loss. These can be later easily compared in tensorboard. This code was then deployed on Amazon AWS p2.xlarge GPU instance taking 60-100 seconds per epoch.
+The code for exploring Convolutional Neural Networks is an adaptation from the official tensorflow tutorial\cite{tf}. The tutorial code was chosen as a basis over the one developed for the previous model and data provider for performance and structure reasons. The tutorial code takes advantages of multi-threaded way of creating queues using \textit{tf.train.batch()} and more efficient methods for data augmentation from \textit{tf.image} library. The code also uses \textit{tf.train.MonitoredTrainingSession} and hooks to output data during training which seems as a better practice, as well as better integration with tensorboard and storing checkpoints. Taking advantage of \textit{tf.app.flags} the model can be instructed from the command line to what to parameters to test, improving scalability.  This code was then adapted to work on a basis of epochs rather than step and tracking accuracy and loss on a per epoch basis. The LoggerHook attached to the MonitoredTrainingSession keeps track of undertaken steps and epochs. On each epoch it stores the training accuracy and loss per epoch, as well as runs a validation script that loads the last stored model and stores the validation accuracy and loss. These can be later easily compared in tensorboard, the only limitation is that tensorboard does not label x axis, which in this case are the number of epochs. This code was then deployed on Amazon AWS p2.xlarge GPU instance taking 60-100 seconds per epoch. 
 
 
 
@@ -60,7 +60,7 @@ The code for exploring Convolutional Neural Networks is an adaptation from the o
 
 \subsubsection*{Network Architecture}
 
-Various network architectures were explored mainly the number of convolution and pooling layers. The model found in previous coursework depicted on Table \ref{tab:baseline} was used as both a baseline and the fully connected layers. Three fully connected layers of 200 hidden units each were used at the start. Explored models were trained on an augmented dataset (flip,contrast,brightness).The experiments consisted of iteratively adding convolution and pooling layers before the fully connected ones taking advantage of the tensorflow functions \textit{tf.nn.conv2d(input, filter, strides, padding, usecudnnongpu=None, dataformat=None, name=None)} and \textit{tf.nn.maxpool(value, ksize, strides, padding, dataformat='NHWC', name=None)}. However these functions require parameters for filter, stride and kernel size values. The effect of these and an appropriate choice will be explored in the latter sections. The initial values for these were taken from a paper which had a well performing model for CIFAR \cite{inspiration} displayed on Table \ref{tab:convpoolpar}. The maximum number of convolution and pooling layers were three as after 3 pooling layers the resulting data size was too small for the chosen kernel size. 
+Various network architectures were explored mainly the number of convolution and pooling layers. The model found in previous coursework depicted on Table \ref{tab:baseline} was used as both a baseline and the fully connected layers. Three fully connected layers of 200 hidden units each were used at the start. Explored models were trained on an augmented dataset (flip,contrast,brightness). The experiments consisted of iteratively adding convolution and pooling layers before the fully connected ones taking advantage of the tensorflow functions \textit{tf.nn.conv2d(input, filter, strides, padding, usecudnnongpu=None, dataformat=None, name=None)} and \textit{tf.nn.maxpool(value, ksize, strides, padding, dataformat='NHWC', name=None)}. However these functions require parameters for filter, stride and kernel size values. The effect of these and an appropriate choice will be explored in the latter sections. The initial values for these were taken from a paper which had a well performing model for CIFAR \cite{inspiration} displayed on Table \ref{tab:convpoolpar}. The maximum number of convolution and pooling layers were three as after 3 pooling layers the resulting data size was too small for the chosen kernel size. 
 
 \begin{table}[H]
 \centering
@@ -83,7 +83,7 @@ Batch size & 128   \\
 \label{tab:convpoolpar}
 \end{table}
 
-The results of different architectures are displayed on Figure \ref{fig:arch}. All models were run only for 30 epochs due to computational complexity, relaying that the number of epochs will be enough to compare architectures and see trends occurring. These show a significant improvement on validation set accuracy over the non-covolutional baseline model which achieved 58\% and the 3 convolution and pooling layers coupled with two fully connected layers of 200 hidden units achieved 81\% accuracy in just 30 epochs. This architecture will be used across the next sections.
+The results of different architectures are displayed on Figure \ref{fig:arch}. All models were run only for 30 epochs due to computational complexity, relying that the number of epochs will be enough to compare architectures and see trends occurring. These show a significant improvement on validation set accuracy over the non-covolutional baseline model which achieved 58\% and the 3 convolution and pooling layers coupled with two fully connected layers of 200 hidden units achieved 81\% accuracy in just 30 epochs. This architecture will be used across the next sections.
 
 \begin{figure*}[ht!]
     \centering
@@ -119,7 +119,7 @@ Previous coursework\cite{me} explored various data augmentation methods and foun
     \label{fig:noaug}
 \end{figure*}
 
-Figure \ref{fig:aug} shows the effects of random cropping data augmentation. The model learns a little slower but even in the small number of epoch matches and starts overtaking the classification performance of the one without random cropping. The model results in a higher validation than training accuracy clearly benefiting with the essentially larger dataset.
+Figure \ref{fig:aug} shows the effects of random cropping data augmentation. The model learns a little slower but even in the small number of epoch matches and starts overtaking the classification performance of the one without random cropping. The model results in a higher validation than training accuracy clearly benefiting with the essentially larger dataset. Random cropping augmentation was applied for the next sections.
 
 \begin{figure*}[ht!]
     \centering
@@ -226,15 +226,29 @@ This section is inspired by the starving for simplicity: The all convolutional n
     \label{tab:allcnn}
 \end{figure*}
 
-The comparison of performances between our found best performing model and and the all convolutional network can be seen on Figure 
+The comparison of performances between our standard pipeline model and and the all convolutional network can be seen on Figure \ref{fig:al}. Showing a 2\% increase in validation accuracy of the All-CNN-C model over the standard pipeline model explored in this coursework.
 
+\begin{figure*}[ht!]
+    \centering
+    \begin{subfigure}[t]{0.475\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{alla.png}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}[t]{0.475\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{alle.png}
+    \end{subfigure}
+    \caption{Comparison of the All-CNN-C and the standard pipeline model explored in this coursework. }
+    \label{fig:al}
+\end{figure*}
 \subsection*{Discussion}
 
-An acknowledged limitation of the experiments performed was the rather small number of 30 epoch. Due to computational and time complexity it was not perform all of these with a larger number of epochs, with the hopes that the trends would be apparent even with this smaller number.
+An acknowledged limitation of some of the experiments performed was the rather small number of 30 epochs. Due to computational and time complexity it was not possible to perform all of these with a larger number of epochs, with the hopes that the trends would be apparent even with this smaller number. Running some models for longer periods of time as will be shown in discussion confirm this intuition.
 
 \subsubsection*{Network architecture}
 
-The network architecture section shows a clear motivation for using conovlutional neural networks compared to just network with fully connected layers explored in the previous assignment. Multiple iterations of convolution and pooling layers followed by fully connected layers were explored. More convolutional and pooling layers allowed the network to learn features and feature of features of the images, allowing to learn features like corners or edges. The larger number of of these convolutional layers proved to be beneficial to a cut off point when the input size became too small for convolutional filters. Increasing the number of fully connected layers following these beyond 2 did not improve the results likely due to the small input entering them. The comparison of our previously found model\cite{me} and the 3 convolution/pooling layer followed by 2 fully connected layers is shown on Figure \ref{fig:netcomp}. The advantages of conolutional networks were expected as per a large number of papers reporting positive results\cite{{inspiration}}\cite{alexnet}\cite{stan}.
+The network architecture section shows a clear motivation for using conovlutional neural networks compared to just networks with fully connected layers explored in the previous assignment. Multiple iterations of convolution and pooling layers followed by fully connected layers were explored. More convolutional and pooling layers allowed the network to learn features and feature of features of the images, allowing to learn features like corners or edges. The larger number of of these convolutional layers proved to be beneficial to a cut off point when the input size became too small for convolutional filters. Increasing the number of fully connected layers following these beyond 2 did not improve the results likely due to the small input entering them. The comparison of our previously found model\cite{me} and the 3 convolution/pooling layer followed by 2 fully connected layers is shown on Figure \ref{fig:netcomp}. The advantages of conolutional networks were expected as per a large number of papers reporting positive results\cite{{inspiration}}\cite{alexnet}\cite{stan}.
 
 \begin{figure*}[ht!]
     \centering
@@ -253,7 +267,7 @@ The network architecture section shows a clear motivation for using conovlutiona
 
 \subsubsection*{Data Augmentation}
 
-As can be observed from Figure \ref{fig:netcomp} the conolutional model was still prone to overfitting despite the number of data augmentation methods already applied. One popular method that was not applied was random cropping used by many papers\cite{kernel}\cite{crop}. This method is able to mimic a significantly larger dataset and the results are on Figure \ref{fig:augcomp}. These show a small increase in performance over the small number of epochs but more importantly by a larger essentially larger dataset the model was no longer overfitting, which should be even more apparent with a larger number of epochs ran. The reported results confirm the initial hypothesis of this being an effective data augmentation method as was suggested by the papers.
+As can be observed from Figure \ref{fig:netcomp} the conolutional model was still prone to overfitting despite the number of data augmentation methods already applied. One popular method that was not applied was random cropping used by many papers\cite{kernel}\cite{crop}. This method is able to mimic a significantly larger dataset and the results are shown on Figure \ref{fig:augcomp}. These show a small increase in performance over the small number of epochs but more importantly by an essentially larger dataset the model was no longer overfitting, which should be even more apparent with a larger number of epochs ran. The reported results confirm the initial hypothesis of this being an effective data augmentation method as was suggested by the papers.
 
 \begin{figure*}[ht!]
     \centering
@@ -266,21 +280,21 @@ As can be observed from Figure \ref{fig:netcomp} the conolutional model was stil
         \centering
         \includegraphics[width=1.0\linewidth]{disauge.png}
     \end{subfigure}
-    \caption{Effects of using random cropping}
+    \caption{Effects of using random cropping.}
     \label{fig:augcomp}
 \end{figure*}
 
 \subsubsection*{Convolution filter size and stride length}
 
-This section aimed to confirm the generally accepted values\cite{kernel}\cite{inspiration}\cite{bestprac} for the filter sizes of 3x3 and 5x5. As was shown in Figure \ref{fig:filter} the results confirm this notion with respect to this dataset that these two values perform both really well, whilst increasing the filter size does not. Larger filter sizes can still be beneficial\cite{alexnet} mainly in cases with larger input sizes. Increasing stride length did not improve the results as at that point the convolutional filters starts behaving more like a polling layer. Further experiments could have explored varying filter sizes, having a larger filter size in the first layer and a small one at the last one. 
+This section aimed to confirm the generally accepted values\cite{kernel}\cite{inspiration}\cite{bestprac} for the filter sizes of 3x3 and 5x5. As was shown in Figure \ref{fig:filter} the results confirm this notion with respect to this dataset that these two values perform both really well, whilst increasing the filter size does not. Larger filter sizes can still be beneficial\cite{alexnet} mainly in cases with larger input sizes. Increasing stride length did not improve the results as at that point the convolutional filters starts behaving more like a polling layer. Further experiments could have explored varying filter sizes, having a larger filter size in the first layer and a small one at the last one. The experiments could have also explored filter depths which were here kept to 64\cite{inspiration}.
 
 \subsubsection*{Pooling kernel size, stride length and fractional pooling}
 
 As with the section above the aim was to first explore the two generally used values for pooling 2x2 and 3x3 with stride 1 and 2 respectively. The expected results were that the 3x3 overlapping pooling will outperform the 2x2 as mentioned in some papers\cite{inspiration}\cite{frac}. The results on Figure \ref{fig:pool} reported similar performances. The larger pooling kernel size was expected to improve generalization, however due to a limited number of epoch and effective data augmentation this might have not became apparent. 
+\\
 
 
-
-Fractional pooling\cite{frac} was then explored which allowed to reduce the size of input by a factor smaller than 2 and hence introduce more conovlutional layers. Comparison of fractional and max pooling is shown on Figure \ref{fig:fraccomp}. The results showed almost identical results, despite the expectation of fractional pooling to perform better. This could have been caused by one of two factors : the number of epochs or the different architecture used in the paper. The number of epochs was increased to 50 to explore how the models will compare, but showed no significant differences at this number. The paper described a model with conovolutional layers ending in size 1x1 and no fully connected layers. However due to similar results fractional pooling stills appears as a viable approach and could be explored further.
+Fractional pooling\cite{frac} was then explored which allowed to reduce the size of input by a factor smaller than 2 and hence introduce more conovlutional layers. Comparison of fractional and max pooling is shown on Figure \ref{fig:fraccomp}. The results showed a significant improvement over standard pooling approach. The best performing was pooling with factor of 1.4 and 6 conovlutional/pooling layers. These results confirm the expectation from the mentioned paper which currently reports one of the highest accuracies on CIFAR-10.
 
 \begin{figure*}[ht!]
     \centering
@@ -297,43 +311,66 @@ Fractional pooling\cite{frac} was then explored which allowed to reduce the size
     \label{fig:fraccomp}
 \end{figure*}
 
-\subsection{The all conovolutional network}
+\subsection*{The all conovolutional network}
 
-The all convolutional network\cite{allconv} is an interesting approach which replaces pooling layers with conovlutional layers with stride 2. Suggesting that it might replace and simplify the standard convolutional neural network pipeline\cite{stan}. The paper reported very positive results on CIFAR and hence was explored in this setting and compared to the previously explored models. The architecture was directly adapted from the paper, but the data with augmentations is the same as with previously explored models for comparison purposes. The results confirm the paper's suggestions showing slightly improved results over our best found model so far, trained on 50 epochs for little more reliable results as shown on Figure \ref{fig:allcomp}. Further architectures in terms of number of layers, filter sizes and depths could be explored. 
-
-\begin{figure*}[ht!]
-    \centering
-    \begin{subfigure}[t]{0.475\textwidth}
-        \centering
-        \includegraphics[width=1.0\linewidth]{disalla.png}
-    \end{subfigure}%
-    ~ 
-    \begin{subfigure}[t]{0.475\textwidth}
-        \centering
-        \includegraphics[width=1.0\linewidth]{disalle.png}
-    \end{subfigure}
-    \caption{Comparison of all convolutional network and the standard explored pipeline.}
-    \label{fig:allcomp}
-\end{figure*}
+The all convolutional network\cite{allconv} is an interesting approach which replaces pooling layers with conovlutional layers with stride 2. Suggesting that it might replace and simplify the standard convolutional neural network pipeline\cite{stan}. The paper reported very positive results on CIFAR and hence was explored in this setting and compared to the previously explored models. The architecture was directly adapted from the paper, but the data with augmentations is the same as with previously explored models for comparison purposes. The results confirm the paper's suggestions improved results over our best found model so far, trained on 50 epochs for little more reliable results as shown on Figure \ref{fig:al}. Further all conovlutional architectures in terms of number of layers, filter sizes and depths could be explored. 
 
 \subsection*{Overall}
 
-The comparison of the three found best performing models with the baseline are shown on Figure \ref{fig:rescomp}. These models are 3(C-MP2) 2FC(200), 3(C-FP1.4)-2FC(200) and All-CNN-C. All three display similar performance on the rather small 50 number of epochs but a significant improvement over the baseline model. The best performing model was the All-CNN-C, with some potential of improvement as it has not been explored fully. 
+The comparison of the three found best performing models with the baseline are shown on Figure \ref{fig:rescomp}. These models are 3(C-MP2) 2FC(200), 6(C-FP1.4)-2FC(200) and All-CNN-C. All three display similar performance on the rather small 50 number of epochs but a significant improvement over the baseline model. The best performing model was one using fractional pooling which corresponds with highest recorded accuracy in literature\cite{frac}. The resulting model is displayed on Table \ref{tab:fracres}. Second best performing was the All-CNN-C which shows a lot of potential and again reporting the high expected results\cite{allconv}. 
 
 \begin{figure*}[ht!]
     \centering
     \begin{subfigure}[t]{0.475\textwidth}
         \centering
-        \includegraphics[width=1.0\linewidth]{disalla.png}
+        \includegraphics[width=1.0\linewidth]{rescompa.png}
     \end{subfigure}%
     ~ 
     \begin{subfigure}[t]{0.475\textwidth}
         \centering
-        \includegraphics[width=1.0\linewidth]{disalle.png}
+        \includegraphics[width=1.0\linewidth]{rescompe.png}
     \end{subfigure}
     \caption{Comparison of the best performing models explored with baseline.}
     \label{fig:rescomp}
 \end{figure*}
+
+\begin{table}[H]
+\centering
+\begin{tabular}[h]{| c | c |}
+\hline
+Conv/Pool layers & 6  \\
+\hline
+FC layer & 1 of 200 hidden units  \\
+\hline
+Activation function & Relu  \\
+\hline
+Data Augmentation & Brightness,Contrast,Whiten,Crop,Flip \\
+\hline 
+Filter size & 5  \\
+\hline
+Filter stride & 1   \\
+\hline
+Number of filters & 64   \\
+\hline
+Pooling ratio & 1.4  \\
+\hline 
+Batch size & 128   \\
+\hline 
+Number of Epochs & 100   \\
+\hline 
+Accuracy &    85.3\% \\
+\hline 
+\end{tabular} 
+\caption{Initial parameters for Convolution and Pooling layers}
+\label{tab:fracres}
+\end{table}
+
+\subsection*{Conclusion}
+This coursework showed a clear motivation for using conolutional neural networks as they achieved over 25\% higher accuracy than previously explored netoworks using only fully connected layers, which coresponds to what was expected from literature\cite{inspiration}\cite{alexnet}\cite{stan}.
+The network architecture section showed that more convolutional/pooling layers tend to increase performance as they allow to learn features and features of features. This trend can be also extracted from later sections where both fractional pooling and all convolutional network benefited with a larger number of convolutional layers.
+ The filter and pooling section confirmed the notion of using generally accepted values for filter and pooling sizes\cite{kernel}\cite{inspiration}\cite{bestprac}. These work well for general cases, it can however be beneficial in some cases to modify these : When the input size is larger\cite{alexnet}; When using non integer values to decrease the factor of how quickly the size degrades\cite{frac} or when using filter stride 2 to replace pooling layers\cite{allconv}.
+Two of these cases of using non-standard parameters for filters and pooling layers were explored. Both fractional pooling and all convolutional network showed improved results over the previous approches as expected from their paper\cite{frac}\cite{allconv}. The all convolutional network seems as a very interesting approach greatly simplifying the network pipeline and should be explored further. Overall the best performing model with 85.3\% accuracy on 100 epochs being the one using fractional pooling corresponding to what was expected from the literature. 
+
 
 
 \begin{thebibliography}{1}
